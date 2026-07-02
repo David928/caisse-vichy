@@ -284,6 +284,22 @@
     cursor: pointer;
   }
 
+  .primary-btn {
+    background: var(--red-deep);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(126,46,31,0.18);
+    cursor: pointer;
+  }
+
+  .primary-btn:hover {
+    background: var(--red);
+  }
+
   .reset-btn:hover {
     color: var(--paper);
     border-color: #7A6A54;
@@ -337,7 +353,7 @@
   <section class="group">
     <h2>Historique</h2>
     <div>
-      <button id="saveSnapshotBtn" class="reset-btn" type="button">Enregistrer la journée</button>
+      <button id="saveSnapshotBtn" class="reset-btn primary-btn" type="button">Enregistrer la journée</button>
       <button id="clearHistoryBtn" class="reset-btn" type="button">Effacer l'historique</button>
     </div>
     <div class="history-list" id="historyList"></div>
@@ -498,7 +514,14 @@
   function saveHistory(data) { localStorage.setItem(STORAGE_HISTORY, JSON.stringify(data)); }
 
   function saveSnapshot() {
-    const snapshot = { when: Date.now(), items: allInputs.map(({ input }) => input.value || "") };
+    const items = allInputs.map(({ input }) => input.value || "");
+    let totalCents = 0, itemCount = 0;
+    allInputs.forEach(({ input, value }) => {
+      const qty = Math.max(0, parseInt(input.value, 10) || 0);
+      totalCents += qty * value;
+      itemCount += qty;
+    });
+    const snapshot = { when: Date.now(), items, totalCents, itemCount };
     const hist = getHistory(); hist.unshift(snapshot); if (hist.length > 25) hist.length = 25; saveHistory(hist); renderHistory();
     // reset today's counts to zero
     allInputs.forEach(({ input }) => { input.value = ""; input.dispatchEvent(new Event('input')); });
@@ -520,7 +543,10 @@
     hist.forEach((s, i) => {
       const item = document.createElement('div'); item.className = 'history-item';
       const when = new Date(s.when).toLocaleString('fr-FR');
-      const left = document.createElement('div'); left.textContent = when + ' · ' + s.items.reduce((acc, v) => acc + (parseInt(v||0)||0), 0) + ' pièces';
+      const left = document.createElement('div');
+      const count = (typeof s.itemCount === 'number') ? s.itemCount : (s.items ? s.items.reduce((acc, v) => acc + (parseInt(v||0)||0), 0) : 0);
+      const total = (typeof s.totalCents === 'number') ? s.totalCents : 0;
+      left.textContent = when + ' · ' + count + ' pièces/billets · ' + eur(total);
       item.appendChild(left);
       const actions = document.createElement('div'); actions.className = 'history-actions';
       const restore = document.createElement('button'); restore.textContent = 'Restaurer'; restore.className = 'reset-btn'; restore.addEventListener('click', () => restoreSnapshot(i));
