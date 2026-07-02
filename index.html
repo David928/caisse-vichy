@@ -51,6 +51,29 @@
     border-bottom: 2px solid var(--ink);
   }
 
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 6px;
+  }
+
+  .logo-uploader {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-left: 6px;
+  }
+
   .eyebrow {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 11px;
@@ -78,6 +101,29 @@
 
   section.group {
     margin-bottom: 26px;
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .history-actions button {
+    margin-left: 6px;
   }
 
   h2 {
@@ -263,10 +309,20 @@
 
 <main>
   <header>
-    <p class="eyebrow">Boutique des Artisans de Vichy</p>
-    <h1>Comptage de caisse</h1>
-    <p class="subtitle" id="today"></p>
+    <div class="brand">
+      <img id="siteLogo" alt="Logo" src="" />
+      <div>
+        <p class="eyebrow">Boutique des Artisans de Vichy</p>
+        <h1>Comptage de caisse</h1>
+        <p class="subtitle" id="today"></p>
+      </div>
+    </div>
+    <!-- uploader removed: logo is loaded from the repository -->
   </header>
+  
+  <div style="display:none">
+    <!-- placeholder for programmatic elements if needed -->
+  </div>
 
   <section class="group">
     <h2>Billets</h2>
@@ -276,6 +332,15 @@
   <section class="group">
     <h2>Pièces</h2>
     <div class="rows" id="pieces"></div>
+  </section>
+
+  <section class="group">
+    <h2>Historique</h2>
+    <div>
+      <button id="saveSnapshotBtn" class="reset-btn" type="button">Enregistrer la journée</button>
+      <button id="clearHistoryBtn" class="reset-btn" type="button">Effacer l'historique</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
   </section>
 </main>
 
@@ -420,12 +485,61 @@
     localStorage.removeItem(STORAGE_KEY);
   });
 
+  // --- Logo and history features ---
+  const STORAGE_HISTORY = "caisse-vichy-history-v1";
+  const LOGO_RAW_URL = "https://raw.githubusercontent.com/David928/caisse-vichy/main/bc93d8_ac872791a1ee4e1192e58e9c62aa79e9~mv2.webp";
+
+  function loadLogo() {
+    const img = document.getElementById("siteLogo");
+    img.src = LOGO_RAW_URL;
+  }
+
+  function getHistory() { try { return JSON.parse(localStorage.getItem(STORAGE_HISTORY) || '[]'); } catch (e) { return []; } }
+  function saveHistory(data) { localStorage.setItem(STORAGE_HISTORY, JSON.stringify(data)); }
+
+  function saveSnapshot() {
+    const snapshot = { when: Date.now(), items: allInputs.map(({ input }) => input.value || "") };
+    const hist = getHistory(); hist.unshift(snapshot); if (hist.length > 25) hist.length = 25; saveHistory(hist); renderHistory();
+    // reset today's counts to zero
+    allInputs.forEach(({ input }) => { input.value = ""; input.dispatchEvent(new Event('input')); });
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  function restoreSnapshot(index) {
+    const hist = getHistory(); const snap = hist[index]; if (!snap) return;
+    snap.items.forEach((v, i) => { if (allInputs[i]) { allInputs[i].input.value = v; allInputs[i].input.dispatchEvent(new Event('input')); } });
+    recompute(); save();
+  }
+
+  function deleteSnapshot(index) { const hist = getHistory(); hist.splice(index, 1); saveHistory(hist); renderHistory(); }
+  function clearHistory() { localStorage.removeItem(STORAGE_HISTORY); renderHistory(); }
+
+  function renderHistory() {
+    const list = document.getElementById('historyList'); list.innerHTML = '';
+    const hist = getHistory(); if (!hist.length) { const empty = document.createElement('div'); empty.textContent = 'Aucun instantané enregistré.'; empty.style.color = 'var(--ink-soft)'; list.appendChild(empty); return; }
+    hist.forEach((s, i) => {
+      const item = document.createElement('div'); item.className = 'history-item';
+      const when = new Date(s.when).toLocaleString('fr-FR');
+      const left = document.createElement('div'); left.textContent = when + ' · ' + s.items.reduce((acc, v) => acc + (parseInt(v||0)||0), 0) + ' pièces';
+      item.appendChild(left);
+      const actions = document.createElement('div'); actions.className = 'history-actions';
+      const restore = document.createElement('button'); restore.textContent = 'Restaurer'; restore.className = 'reset-btn'; restore.addEventListener('click', () => restoreSnapshot(i));
+      const del = document.createElement('button'); del.textContent = 'Supprimer'; del.className = 'reset-btn'; del.addEventListener('click', () => deleteSnapshot(i));
+      actions.appendChild(restore); actions.appendChild(del); item.appendChild(actions); list.appendChild(item);
+    });
+  }
+
+  document.getElementById('saveSnapshotBtn').addEventListener('click', saveSnapshot);
+  document.getElementById('clearHistoryBtn').addEventListener('click', () => { if (confirm("Effacer tout l'historique ?")) clearHistory(); });
+
   const todayStr = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   document.getElementById("today").textContent = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
 
   mount();
   load();
   recompute();
+  loadLogo();
+  renderHistory();
 </script>
 </body>
 </html>
