@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Caisse — Boutique des Artisans de Vichy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="theme-color" content="#2A2520" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Caisse Vichy" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%99%3C/text%3E%3C/svg%3E" />
+<style>
+  :root {
+    --paper: #F5F1E7;
+    --surface: #FCFAF4;
+    --ink: #2A2520;
+    --ink-soft: #6E6455;
+    --line: #E3DAC7;
+    --red: #A6402C;
+    --red-deep: #7E2E1F;
+    --brass: #B8892E;
+    --focus: #1B4F91;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(166,64,44,0.05) 0px, rgba(166,64,44,0.05) 1px, transparent 1px, transparent 34px),
+      repeating-linear-gradient(90deg, rgba(166,64,44,0.05) 0px, rgba(166,64,44,0.05) 1px, transparent 1px, transparent 34px);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px 140px;
+    min-height: 100vh;
+  }
+
+  main {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  header {
+    text-align: left;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    line-height: 1.15;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  section.group {
+    margin-bottom: 26px;
+  }
+
+  h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  h2::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 44px 1fr 88px 110px;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 14px;
+  }
+
+  .chip {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    flex-shrink: 0;
+  }
+
+  .chip.coin {
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .chip.note {
+    width: 46px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .label {
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    padding: 7px 4px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  input[type="number"]:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+    border-color: var(--focus);
+  }
+
+  input[type="number"]::-webkit-inner-spin-button {
+    opacity: 1;
+  }
+
+  .line-total {
+    font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    color: var(--ink-soft);
+  }
+
+  .line-total.active {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  footer.summary {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(245,241,231,0) 0%, var(--paper) 30%);
+  }
+
+  .summary-card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 8px 24px rgba(42,37,32,0.28);
+  }
+
+  .summary-meta {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #C9BFA9;
+  }
+
+  .summary-meta strong {
+    color: var(--paper);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .summary-total {
+    font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #E8B94A;
+  }
+
+  .reset-btn {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #C9BFA9;
+    background: transparent;
+    border: 1px solid #55493A;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .reset-btn:hover {
+    color: var(--paper);
+    border-color: #7A6A54;
+  }
+
+  .reset-btn:focus-visible {
+    outline: 2px solid #E8B94A;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 420px) {
+    .row { grid-template-columns: 38px 1fr 72px 88px; gap: 8px; padding: 8px 10px; }
+    .summary-meta { display: none; }
+    .summary-total { font-size: 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <header>
+    <p class="eyebrow">Boutique des Artisans de Vichy</p>
+    <h1>Comptage de caisse</h1>
+    <p class="subtitle" id="today"></p>
+  </header>
+
+  <section class="group">
+    <h2>Billets</h2>
+    <div class="rows" id="billets"></div>
+  </section>
+
+  <section class="group">
+    <h2>Pièces</h2>
+    <div class="rows" id="pieces"></div>
+  </section>
+</main>
+
+<footer class="summary">
+  <div class="summary-card">
+    <div>
+      <div class="summary-meta">Total compté &nbsp;·&nbsp; <strong id="itemCount">0</strong> pièces/billets</div>
+      <div class="summary-total" id="grandTotal">0,00&nbsp;€</div>
+    </div>
+    <button class="reset-btn" id="resetBtn" type="button">Réinitialiser</button>
+  </div>
+</footer>
+
+<script>
+  const DENOMS = {
+    billets: [
+      { value: 50000, label: "500 €", color: "#7A3A82" },
+      { value: 20000, label: "200 €", color: "#C9A227" },
+      { value: 10000, label: "100 €", color: "#127A54" },
+      { value: 5000,  label: "50 €",  color: "#D97C28" },
+      { value: 2000,  label: "20 €",  color: "#1B4F91" },
+      { value: 1000,  label: "10 €",  color: "#A6402C" },
+      { value: 500,   label: "5 €",   color: "#7A756A" },
+    ],
+    pieces: [
+      { value: 200, label: "2 €",    color: "#8A7A4E", ring: true },
+      { value: 100, label: "1 €",    color: "#8A7A4E", ring: true },
+      { value: 50,  label: "50 c",   color: "#B8892E" },
+      { value: 20,  label: "20 c",   color: "#B8892E" },
+      { value: 10,  label: "10 c",   color: "#B8892E" },
+      { value: 5,   label: "5 c",    color: "#A9673A" },
+      { value: 2,   label: "2 c",    color: "#A9673A" },
+      { value: 1,   label: "1 c",    color: "#A9673A" },
+    ],
+  };
+
+  const STORAGE_KEY = "caisse-vichy-v1";
+
+  function eur(cents) {
+    return (cents / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  }
+
+  function buildRow(denom, kind) {
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const chip = document.createElement("div");
+    chip.className = "chip " + (kind === "billets" ? "note" : "coin");
+    chip.style.background = denom.ring
+      ? `radial-gradient(circle at 50% 50%, ${denom.color} 45%, #D8C68A 46% 62%, ${denom.color} 63%)`
+      : denom.color;
+    chip.textContent = denom.label.replace(" €", "€").replace(" c", "c");
+    row.appendChild(chip);
+
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = denom.label;
+    row.appendChild(label);
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "1";
+    input.inputMode = "numeric";
+    input.placeholder = "0";
+    input.setAttribute("aria-label", "Quantité de " + denom.label);
+    input.dataset.value = denom.value;
+    row.appendChild(input);
+
+    const lineTotal = document.createElement("div");
+    lineTotal.className = "line-total";
+    lineTotal.textContent = eur(0);
+    row.appendChild(lineTotal);
+
+    input.addEventListener("input", () => {
+      const qty = Math.max(0, parseInt(input.value, 10) || 0);
+      const subtotal = qty * denom.value;
+      lineTotal.textContent = eur(subtotal);
+      lineTotal.classList.toggle("active", qty > 0);
+      recompute();
+      save();
+    });
+
+    return { row, input };
+  }
+
+  const allInputs = [];
+
+  function mount() {
+    const billetsEl = document.getElementById("billets");
+    const piecesEl = document.getElementById("pieces");
+
+    DENOMS.billets.forEach((d) => {
+      const { row, input } = buildRow(d, "billets");
+      billetsEl.appendChild(row);
+      allInputs.push({ input, value: d.value });
+    });
+
+    DENOMS.pieces.forEach((d) => {
+      const { row, input } = buildRow(d, "pieces");
+      piecesEl.appendChild(row);
+      allInputs.push({ input, value: d.value });
+    });
+  }
+
+  function recompute() {
+    let totalCents = 0;
+    let itemCount = 0;
+    allInputs.forEach(({ input, value }) => {
+      const qty = Math.max(0, parseInt(input.value, 10) || 0);
+      totalCents += qty * value;
+      itemCount += qty;
+    });
+    document.getElementById("grandTotal").textContent = eur(totalCents);
+    document.getElementById("itemCount").textContent = itemCount.toLocaleString("fr-FR");
+  }
+
+  function save() {
+    const data = allInputs.map(({ input }) => input.value || "");
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      data.forEach((v, i) => {
+        if (allInputs[i] && v) {
+          allInputs[i].input.value = v;
+          allInputs[i].input.dispatchEvent(new Event("input"));
+        }
+      });
+    } catch (e) {}
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    allInputs.forEach(({ input }) => {
+      input.value = "";
+      input.dispatchEvent(new Event("input"));
+    });
+    localStorage.removeItem(STORAGE_KEY);
+  });
+
+  const todayStr = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  document.getElementById("today").textContent = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
+
+  mount();
+  load();
+  recompute();
+</script>
+</body>
+</html>
